@@ -7,8 +7,6 @@ import {
     Paper,
     Typography,
     Button,
-    AppBar,
-    Toolbar,
     Box,
     Dialog,
     DialogTitle,
@@ -25,18 +23,69 @@ import {
     TableRow,
     IconButton,
     Chip,
-    Card,
-    CardContent,
     Menu,
     Avatar,
     ListItemIcon,
     Divider
 } from '@mui/material';
-import { LogOut, Plus, Edit, Trash2, Users, Award, BookOpen, GraduationCap, X, FileText, UploadCloud, ChevronDown, User } from 'lucide-react';
+import { LogOut, Plus, Trash2, Users, Award, BookOpen, X, FileText, UploadCloud, ChevronDown, User } from 'lucide-react';
+import { useDropzone } from 'react-dropzone';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { io } from 'socket.io-client';
 import Footer from '../components/Footer';
+
+// Dropzone Component
+const DropzoneArea = ({ file, setFile }) => {
+    const onDrop = (acceptedFiles) => {
+        if (acceptedFiles && acceptedFiles.length > 0) {
+            setFile(acceptedFiles[0]);
+        }
+    };
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+        onDrop,
+        accept: { 'application/pdf': ['.pdf'] },
+        multiple: false,
+        maxSize: 10485760 // 10MB
+    });
+
+    return (
+        <div
+            {...getRootProps()}
+            className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-all ${isDragActive
+                    ? 'border-primary-600 bg-primary-50 scale-105'
+                    : file
+                        ? 'border-primary-500 bg-primary-50'
+                        : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50'
+                }`}
+        >
+            <input {...getInputProps()} />
+            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                {file ? (
+                    <>
+                        <FileText size={40} className="text-primary-600 mb-3 animate-bounce" />
+                        <p className="text-sm text-gray-900 font-semibold mb-1">{file.name}</p>
+                        <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(2)} KB</p>
+                        <p className="text-xs text-primary-600 mt-2">Click or drop to replace</p>
+                    </>
+                ) : isDragActive ? (
+                    <>
+                        <UploadCloud size={40} className="text-primary-600 mb-3 animate-pulse" />
+                        <p className="text-sm text-primary-700 font-semibold">Drop your PDF here...</p>
+                    </>
+                ) : (
+                    <>
+                        <UploadCloud size={40} className="text-gray-400 mb-3" />
+                        <p className="text-sm text-gray-600 font-medium mb-1">Drag & drop your PDF here</p>
+                        <p className="text-xs text-gray-400">or click to browse (Max 10MB)</p>
+                    </>
+                )}
+            </div>
+        </div>
+    );
+};
+
 
 const TeacherDashboard = () => {
     const { user, logout } = useAuth();
@@ -211,6 +260,43 @@ const TeacherDashboard = () => {
             console.error('Error saving result:', error);
             Swal.fire({ icon: 'error', title: 'Error', text: error.response?.data?.message || 'Error saving result', confirmButtonColor: '#0ea5e9' });
         }
+    };
+
+    const handleDelete = async (id) => {
+        const result = await Swal.fire({
+            title: 'Delete Result?',
+            text: "This action cannot be undone!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Delete',
+            customClass: {
+                popup: 'rounded-2xl',
+                confirmButton: 'rounded-xl',
+                cancelButton: 'rounded-xl'
+            }
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await resultAPI.deleteResult(id);
+                Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Result deleted successfully', confirmButtonColor: '#0ea5e9' });
+                fetchData();
+            } catch (error) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to delete result', confirmButtonColor: '#0ea5e9' });
+            }
+        }
+    };
+
+    const getGradeColor = (grade) => {
+        const gradeColors = {
+            'A+': 'success', 'A': 'success',
+            'B+': 'info', 'B': 'info',
+            'C+': 'warning', 'C': 'warning',
+            'D': 'error', 'F': 'error'
+        };
+        return gradeColors[grade] || 'default';
     };
 
     // ... (rest of helper functions like handleDelete)
@@ -511,29 +597,7 @@ const TeacherDashboard = () => {
                             <Typography variant="subtitle2" className="mb-2 font-semibold text-gray-700">
                                 Result PDF *
                             </Typography>
-                            <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-xl cursor-pointer hover:bg-gray-50 transition-colors ${file ? 'border-primary-500 bg-primary-50' : 'border-gray-300'}`}>
-                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                    {file ? (
-                                        <>
-                                            <FileText size={32} className="text-primary-600 mb-2" />
-                                            <p className="text-sm text-gray-900 font-medium">{file.name}</p>
-                                            <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(2)} KB</p>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <UploadCloud size={32} className="text-gray-400 mb-2" />
-                                            <p className="text-sm text-gray-500 font-medium">Click to upload or drag and drop</p>
-                                            <p className="text-xs text-gray-400">PDF files only</p>
-                                        </>
-                                    )}
-                                </div>
-                                <input
-                                    type="file"
-                                    className="hidden"
-                                    accept="application/pdf"
-                                    onChange={handleFileChange}
-                                />
-                            </label>
+                            <DropzoneArea file={file} setFile={setFile} />
                         </Grid>
 
                         <Grid size={{ xs: 12 }}>

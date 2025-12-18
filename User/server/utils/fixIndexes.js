@@ -25,6 +25,14 @@ async function fixIndexes() {
             console.log('studentId index may not exist:', error.message);
         }
 
+        // Drop email index if it exists
+        try {
+            await collection.dropIndex('email_1');
+            console.log('✅ Dropped email_1 index');
+        } catch (error) {
+            console.log('email index may not exist:', error.message);
+        }
+
         console.log('\n✅ Index cleanup complete!');
         console.log('Restart your server to recreate indexes properly.');
 
