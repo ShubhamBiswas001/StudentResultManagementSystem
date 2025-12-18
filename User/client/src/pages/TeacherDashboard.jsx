@@ -54,10 +54,10 @@ const DropzoneArea = ({ file, setFile }) => {
         <div
             {...getRootProps()}
             className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-all ${isDragActive
-                    ? 'border-primary-600 bg-primary-50 scale-105'
-                    : file
-                        ? 'border-primary-500 bg-primary-50'
-                        : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50'
+                ? 'border-primary-600 bg-primary-50 scale-105'
+                : file
+                    ? 'border-primary-500 bg-primary-50'
+                    : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50'
                 }`}
         >
             <input {...getInputProps()} />
