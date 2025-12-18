@@ -56,6 +56,7 @@ cd StudentResultManagementSystem
 
 Install root dependencies:
 ```bash
+cd User
 npm install
 ```
 
@@ -75,7 +76,7 @@ cd ..
 
 ### 3. Configure Environment Variables
 
-The server `.env` file is already created at `server/.env` with default values:
+The server `.env` file is already created at `User/server/.env` with default values:
 
 ```env
 PORT=5000
@@ -109,9 +110,9 @@ brew services start mongodb-community
 Create a default teacher account:
 
 ```bash
-cd server
+cd User/server
 npm run seed
-cd ..
+cd ../..
 ```
 
 This creates a teacher account with:
@@ -122,9 +123,10 @@ This creates a teacher account with:
 
 ### Option 1: Run Both Frontend and Backend Together (Recommended)
 
-From the root directory:
+From the User directory:
 
 ```bash
+cd User
 npm run dev
 ```
 
@@ -136,13 +138,13 @@ This will start:
 
 **Terminal 1 - Backend:**
 ```bash
-cd server
+cd User/server
 npm run dev
 ```
 
 **Terminal 2 - Frontend:**
 ```bash
-cd client
+cd User/client
 npm run dev
 ```
 
@@ -197,46 +199,48 @@ Open your browser and navigate to: `http://localhost:5173`
 
 ```
 StudentResultManagementSystem/
-├── client/                    # React frontend
-│   ├── src/
-│   │   ├── components/       # Reusable components
-│   │   │   └── ProtectedRoute.jsx
-│   │   ├── pages/           # Page components
-│   │   │   ├── Login.jsx
-│   │   │   ├── Register.jsx
-│   │   │   ├── StudentDashboard.jsx
-│   │   │   └── TeacherDashboard.jsx
-│   │   ├── context/         # Context providers
-│   │   │   └── AuthContext.jsx
-│   │   ├── services/        # API services
-│   │   │   └── api.js
-│   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   └── index.css
-│   ├── package.json
-│   ├── tailwind.config.js
-│   └── vite.config.js
-├── server/                   # Node.js backend
-│   ├── models/              # MongoDB models
-│   │   ├── User.js
-│   │   └── Result.js
-│   ├── routes/              # API routes
-│   │   ├── auth.js
-│   │   ├── students.js
-│   │   └── results.js
-│   ├── controllers/         # Route controllers
-│   │   ├── authController.js
-│   │   ├── studentController.js
-│   │   └── resultController.js
-│   ├── middleware/          # Custom middleware
-│   │   └── auth.js
-│   ├── uploads/             # Uploaded files
-│   ├── server.js
-│   ├── seedTeacher.js
-│   ├── .env
-│   └── package.json
-├── package.json             # Root package.json
-└── README.md
+├── User/                      # Main application directory
+│   ├── client/               # React frontend
+│   │   ├── src/
+│   │   │   ├── components/   # Reusable components
+│   │   │   │   └── ProtectedRoute.jsx
+│   │   │   ├── pages/       # Page components
+│   │   │   │   ├── Login.jsx
+│   │   │   │   ├── Register.jsx
+│   │   │   │   ├── StudentDashboard.jsx
+│   │   │   │   └── TeacherDashboard.jsx
+│   │   │   ├── context/     # Context providers
+│   │   │   │   └── AuthContext.jsx
+│   │   │   ├── services/    # API services
+│   │   │   │   └── api.js
+│   │   │   ├── App.jsx
+│   │   │   ├── main.jsx
+│   │   │   └── index.css
+│   │   ├── package.json
+│   │   ├── tailwind.config.js
+│   │   └── vite.config.js
+│   ├── server/              # Node.js backend
+│   │   ├── models/          # MongoDB models
+│   │   │   ├── User.js
+│   │   │   └── Result.js
+│   │   ├── routes/          # API routes
+│   │   │   ├── auth.js
+│   │   │   ├── students.js
+│   │   │   └── results.js
+│   │   ├── controllers/     # Route controllers
+│   │   │   ├── authController.js
+│   │   │   ├── studentController.js
+│   │   │   └── resultController.js
+│   │   ├── middleware/      # Custom middleware
+│   │   │   └── auth.js
+│   │   ├── uploads/         # Uploaded files
+│   │   ├── server.js
+│   │   ├── seedTeacher.js
+│   │   ├── .env
+│   │   └── package.json
+│   └── package.json         # Root package.json for User
+├── Admin/                    # Admin directory (if applicable)
+└── README.md                 # This file
 
 ```
 
@@ -280,8 +284,8 @@ Teachers can modify subject names and add/remove subjects as needed.
 - Verify MongoDB is accessible on port 27017
 
 ### Port Already in Use
-- Backend: Change `PORT` in `server/.env`
-- Frontend: Change port in `client/vite.config.js`
+- Backend: Change `PORT` in `User/server/.env`
+- Frontend: Change port in `User/client/vite.config.js`
 
 ### Dependencies Issues
 ```bash
